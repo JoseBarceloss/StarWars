@@ -1,80 +1,102 @@
-import { useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
+import { FilterOPT } from '../type/type';
 import ContextPlanets from '../context/PlanetContext';
 
-function FilterBar() {
+const columnsSelect = [
+  'population',
+  'orbital_period',
+  'diameter',
+  'rotation_period',
+  'surface_water',
+];
 
-  const { setPlanets, originalPlanets } = useContext(ContextPlanets);
+const FilterBar: React.FC = () => {
+  const {
+    numericFilters,
+    moreNumericFilter,
+    remAllNumericFilters,
+    remNumericFilter,
+  } = useContext(ContextPlanets);
 
-  const [choicedColumn, setChoicedColumn] = useState('population');
-  const [choicedComparison, setChoicedComparison] = useState('maior que');
-  const [filterNumber, setFilterNumber] = useState<string>('0');
+  const [selectedColumn, setSelectedColumn] = useState<string>('population');
+  const [selectedComparison, setSelectedComparison] = useState<string>('maior que');
+  const [filterValue, setFilterValue] = useState<string>('0');
 
-  const numericFilter = () => {
-    const filterValue = parseFloat(filterNumber);
-
-    const filteredPlanets = originalPlanets.filter((planet) => {
-      const planetValue = parseFloat(planet[choicedColumn]);
-
-      switch (choicedComparison) {
-        case 'maior que':
-          return planetValue > filterValue;
-        case 'menor que':
-          return planetValue < filterValue;
-        case 'igual a':
-          return planetValue === filterValue;
-        default:
-          return false;
-      }
-    });
-
-    setPlanets(filteredPlanets);
+  const handleAddFilter = () => {
+    const newFilter: FilterOPT = {
+      column: selectedColumn,
+      comparison: selectedComparison,
+      value: filterValue,
+    };
+    moreNumericFilter(newFilter);
   };
+
+  const handleRemoveFilter = (filter: FilterOPT) => {
+    remNumericFilter(filter);
+  };
+
+  const renderFilterOptions = () =>
+    columnsSelect
+      .filter((column) => !numericFilters.some((filter) => filter.column === column))
+      .map((column) => (
+        <option key={column} value={column}>
+          {column}
+        </option>
+      ));
+
+  useEffect(() => {
+    setSelectedColumn(columnsSelect[0]);
+    setSelectedComparison('maior que');
+    setFilterValue('0');
+  }, [numericFilters]);
 
   return (
     <>
-
       <label htmlFor="column">Coluna:</label>
       <select
         data-testid="column-filter"
         id="column"
-        value={choicedColumn}
-        onChange={(e) => setChoicedColumn(e.target.value)}
+        value={selectedColumn}
+        onChange={(e) => setSelectedColumn(e.target.value)}
       >
-
-        {['population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water'].map((col) => (
-          <option key={col} value={col}>
-            {col}
-          </option>
-        ))}
+        {renderFilterOptions()}
       </select>
 
       <label htmlFor="operator">Operador:</label>
       <select
         data-testid="comparison-filter"
         id="operator"
-        value={choicedComparison}
-        onChange={(e) => setChoicedComparison(e.target.value)}
+        value={selectedComparison}
+        onChange={(e) => setSelectedComparison(e.target.value)}
       >
-
-        {['maior que', 'menor que', 'igual a'].map((op) => (
-          <option key={op} value={op}>
-            {op}
-          </option>
-        ))}
+        <option value="maior que">maior que</option>
+        <option value="menor que">menor que</option>
+        <option value="igual a">igual a</option>
       </select>
 
       <input
         data-testid="value-filter"
         type="number"
-        value={filterNumber}
-        onChange={(e) => setFilterNumber(e.target.value)}
+        value={filterValue}
+        onChange={(e) => setFilterValue(e.target.value)}
       />
 
-      <button data-testid="button-filter" onClick={numericFilter}>
+      <button data-testid="button-filter" onClick={handleAddFilter}>
         Filtrar
+      </button>
+
+      {numericFilters.map((filter, index) => (
+        <div key={index} data-testid="filter">
+          {`${filter.column} ${filter.comparison} ${filter.value}`}
+          <button onClick={() => handleRemoveFilter(filter)}>Remover</button>
+        </div>
+      ))}
+
+      <button data-testid="button-remove-filters" onClick={remAllNumericFilters}>
+        Remover Filtros
       </button>
     </>
   );
-}
+};
 
 export default FilterBar;

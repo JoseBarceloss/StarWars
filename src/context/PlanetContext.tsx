@@ -1,22 +1,21 @@
 import { createContext } from 'react';
-import { Planet } from '../type/type';
+import { Planets, FilterOPT, Planet } from '../type/type';
 
-type PlanetsContextType = {
+type PlanetsContext = {
   planets: Planet[];
-  setPlanets: (newPlanets: Planet[]) => void;
-  searchValue: string;
-  setSearchValue: (value: string) => void;
-  originalPlanets: Planet[];
-  handleClickFilter: (filterTerm: string) => void;
+  setPlanets: (planets: Planet[]) => void,
+  searchValue: string,
+  setSearchValue: (term: string) => void,
+  originalPlanets: Planet[],
+  handleClickFilter: (filteredPlanetsByName: Planet[]) => Planet[],
+  numericFilters: FilterOPT[],
+  moreNumericFilter: (filter: FilterOPT) => void,
+  remAllNumericFilters: () => void,
+  remNumericFilter: (filter: FilterOPT) => void,
+  sortPlanets: (planetsSorted: Planets) => Planet[]
+  setSortOrder: (sortOrder: { column: string, sort: string }) => void,
 };
 
-const PlanetsContext = createContext<PlanetsContextType>({
-  planets: [],
-  setPlanets: () => {},
-  searchValue: '',
-  setSearchValue: () => {},
-  originalPlanets: [],
-  handleClickFilter: () => {},
-});
+const ContextPlanets = createContext({} as PlanetsContext);
 
-export default PlanetsContext;
+export default ContextPlanets;

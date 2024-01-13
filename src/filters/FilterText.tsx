@@ -1,18 +1,27 @@
-import { FilterTextProps } from '../type/type';
+import React, { useContext, ChangeEvent } from 'react';
+import ContextPlanets from '../context/PlanetContext';
 
-function FilterText({ value, onChange }: FilterTextProps) {
+const FilterText: React.FC<any> = () => {
+  const { searchValue, setSearchValue } = useContext(ContextPlanets);
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(event.target.value);
+  };
+
   return (
-    <>
-      <label htmlFor="search">Search: </label>
+    <div>
+      <label htmlFor="search">Search:</label>
       <input
         data-testid="name-filter"
         id="search"
         type="text"
-        value={ value }
-        onChange={ onChange }
+        value={searchValue}
+        onChange={handleInputChange}
+        placeholder="Search planets..."
+        aria-label="Search planets"
       />
-    </>
+    </div>
   );
-}
+};
 
 export default FilterText;

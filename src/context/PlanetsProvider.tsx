@@ -1,12 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import fetchPlanets from '../API/Fetch';
-import { Planet, PlanetsProviderProps } from '../type/type';
+import { Planets, FilterOPT, Planet, PlanetsProviderProps } from '../type/type';
 import ContextPlanets from './PlanetContext';
 
 function PlanetsProvider({ children } :PlanetsProviderProps) {
   const [originalPlanets, setOriginalPlanets] = useState<Planet[]>([]);
   const [planets, setPlanets] = useState<Planet[]>([]);
   const [searchValue, setSearchValue] = useState('');
+  const [numericFilters, setNumericFilters] = useState<FilterOPT[]>([]);
+  const [sortOrder, setSortOrder] = useState({ column: '', sort: '' });
+
+  const moreNumericFilter = (filter: FilterOPT) => {
+    setNumericFilters([...numericFilters, filter]);
+  };
+
+  const remNumericFilter = (filter: FilterOPT) => {
+    const updatedFilters = numericFilters.filter((prevFilter) => {
+      return (
+        prevFilter.column !== filter.column
+        || prevFilter.comparison !== filter.comparison
+        || prevFilter.value !== filter.value
+      );
+    });
+    setNumericFilters(updatedFilters);
+  };
 
   useEffect(() => {
     const getPlanets = async () => {
@@ -21,13 +38,48 @@ function PlanetsProvider({ children } :PlanetsProviderProps) {
     getPlanets();
   }, []);
 
-  const handleClickFilter = (term: string) => {
-    const filteredPlanets = originalPlanets.filter((planet) => {
-      const planetName = planet.name.toLowerCase();
-      const searchText = term.toLowerCase();
-      return planetName.includes(searchText);
+  const handleClickFilter = (filPlanetsByName: Planet[]) => {
+    if (numericFilters.length) {
+      const filPlanetsByNumeric = filPlanetsByName.filter((planet) => {
+        return numericFilters.every(({ comparison, column, value }) => {
+          const planetValue = Number(planet[column]);
+          const valueFilter = Number(value);
+
+          if (comparison === 'maior que') {
+            return planetValue > valueFilter;
+          } if (comparison === 'menor que') {
+            return planetValue < valueFilter;
+          } if (comparison === 'igual a') {
+            return planetValue === valueFilter;
+          }
+
+          return true;
+        });
+      });
+      return filPlanetsByNumeric;
+    }
+    return filPlanetsByName;
+  };
+
+  const sortPlanets = (planetsSorted: Planets) => {
+    const orderC = sortOrder.column;
+    if (!orderC) return planetsSorted;
+    return planets.sort((a, b) => {
+      if (a[orderC] === 'unknown' && b[orderC] === 'unknown') {
+        return 0;
+      } if (b[orderC] === 'unknown') {
+        return -1;
+      } if (a[orderC] === 'unknown') {
+        return 1;
+      }
+      return sortOrder.sort === 'ASC'
+        ? Number(a[orderC]) - Number(b[orderC])
+        : Number(b[orderC]) - Number(a[orderC]);
     });
-    setPlanets(filteredPlanets);
+  };
+
+  const remAllNumericFilters = () => {
+    setNumericFilters([]);
   };
 
   return (
@@ -39,6 +91,12 @@ function PlanetsProvider({ children } :PlanetsProviderProps) {
         setSearchValue,
         originalPlanets,
         handleClickFilter,
+        numericFilters,
+        moreNumericFilter,
+        remAllNumericFilters,
+        remNumericFilter,
+        sortPlanets,
+        setSortOrder,
       } }
     >
       {children}
