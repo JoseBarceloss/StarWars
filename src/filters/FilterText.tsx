@@ -1,7 +1,7 @@
-import React, { useContext, ChangeEvent } from 'react';
+import React, { useContext, ChangeEvent, ReactElement } from 'react';
 import ContextPlanets from '../context/PlanetContext';
 
-const FilterText: React.FC<any> = () => {
+function FilterText(): ReactElement {
   const { searchValue, setSearchValue } = useContext(ContextPlanets);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -15,13 +15,13 @@ const FilterText: React.FC<any> = () => {
         data-testid="name-filter"
         id="search"
         type="text"
-        value={searchValue}
-        onChange={handleInputChange}
+        value={ searchValue }
+        onChange={ handleInputChange }
         placeholder="Search planets..."
         aria-label="Search planets"
       />
     </div>
   );
-};
+}
 
 export default FilterText;

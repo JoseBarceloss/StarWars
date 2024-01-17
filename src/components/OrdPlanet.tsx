@@ -22,7 +22,7 @@ function OrdPlanet() {
   });
 
   const updateSortType = (updatedField: Partial<SortType>) => {
-    setSortType(prevSortType => ({ ...prevSortType, ...updatedField }));
+    setSortType((prevSortType) => ({ ...prevSortType, ...updatedField }));
   };
 
   const handleColumnChange = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -40,11 +40,11 @@ function OrdPlanet() {
         <select
           name="column-sort"
           data-testid="column-sort"
-          value={sortType.column}
-          onChange={handleColumnChange}
+          value={ sortType.column }
+          onChange={ handleColumnChange }
         >
-          {columnsSelect.map(column => (
-            <option key={column} value={column}>
+          {columnsSelect.map((column) => (
+            <option key={ column } value={ column }>
               {column}
             </option>
           ))}
@@ -58,8 +58,8 @@ function OrdPlanet() {
           value="ASC"
           id="sort-asc"
           data-testid="column-sort-input-asc"
-          onChange={() => handleSortChange('ASC')}
-          checked={sortType.sort === 'ASC'}
+          onChange={ () => handleSortChange('ASC') }
+          checked={ sortType.sort === 'ASC' }
         />
       </div>
       <div>
@@ -70,14 +70,14 @@ function OrdPlanet() {
           value="DESC"
           id="sort-desc"
           data-testid="column-sort-input-desc"
-          onChange={() => handleSortChange('DESC')}
-          checked={sortType.sort === 'DESC'}
+          onChange={ () => handleSortChange('DESC') }
+          checked={ sortType.sort === 'DESC' }
         />
       </div>
 
-      <button 
-        data-testid="column-sort-button" 
-        onClick={() => setSortOrder(sortType)}
+      <button
+        data-testid="column-sort-button"
+        onClick={ () => setSortOrder(sortType) }
       >
         Ordenar
       </button>

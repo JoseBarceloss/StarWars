@@ -8,7 +8,8 @@ const comparePopulation = (a: string, b: string): number => {
 };
 
 export const sortByOrbital = (planets: Planets) => {
-  return [...planets].sort((a, b) => parseFloat(a.orbital_period) - parseFloat(b.orbital_period));
+  return [...planets]
+    .sort((a, b) => parseFloat(a.orbital_period) - parseFloat(b.orbital_period));
 };
 
 export const sortByDiameter = (planets: Planets) => {
